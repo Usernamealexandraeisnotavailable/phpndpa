@@ -39,21 +39,56 @@ There are quite a few **rules of inference**, which aren't always _exactly_ how 
 -  `->eval(theorem $t, array $lines)` : Not a rule of inference _per se_, simply evaluates an earlier theorem `$t` that requires the lines stored at `$lines` in the right order.
 - `->sorry()` : Shows that we don't know how to prove a theorem, or haven't proved it yet ; converts the `issorry` variable to true.
 
-Here's an example of code that implements a full-fletched theorem, with a proof and everything :
+Here are examples of codes that implement fully-fletched theorem, with proofs and everything :
 ```php
-function doubleNegationIntroduction (wff $p) : theorem {
-	$premises[0] = $p;
-	$conclusion = wff::not(wff::not($p));
+function doubleNegationElimination (wff $p) : theorem {
+	$premises[0] = wff::not(wff::not($p));
+	$conclusion = $p;
 	$sequent = new sequent($premises,$conclusion);
-	$thm = new theorem($sequent,[$p],'DNI');
-		
+	$theorem = new theorem($sequent,[$p],'DNE');
+	
+	// no proof in intuitionistic logic... sowwy ! >w<
+	$theorem->sorry()
+	;return $theorem;
+}
+function DeMorganND2CN (wff $p, wff $q) : theorem {
+	$premises[0] = wff::not(wff::or($p,$q));
+	$conclusion = wff::and(wff::not($p),wff::not($q));
+	$sequent = new sequent($premises,$conclusion);
+	$theorem = new theorem($sequent,[$p,$q],'DeM');
+	
 	// proof
-	$thm->startSubproof(wff::not($p))
-		->conjunctionIntroduction(0,1)
-		->conjunctionEliminationLeft(2)
-		->conditionalIntroduction(1)
+	$theorem->startSubproof($p)
+		->disjunctionIntroductionLeft(1,$q)
+		->conjunctionIntroduction(0,2)
+		->conjunctionEliminationLeft(3)
+		->conditionalIntroduction(4)
+		->conditionalIntroduction(2)
+		->negationIntroduction(5,6)
+		->startSubproof($q)
+		->disjunctionIntroductionRight(8,$p)
+		->conjunctionIntroduction(0,9)
+		->conjunctionEliminationLeft(10)
+		->conditionalIntroduction(11)
+		->conditionalIntroduction(9)
+		->negationIntroduction(12,13)
+		->conjunctionIntroduction(7,14)
+	;return $theorem;
+}
+function lawOfExcludedMiddle (wff $p) : theorem {
+	$conclusion = wff::or($p,wff::not($p));
+	$sequent = new sequent([],$conclusion);
+	$theorem = new theorem($sequent,[$p],'LEM');
+	
+	// proof
+	$theorem->startSubproof(wff::not(wff::or($p,wff::not($p))))
+		->eval(moarTheorems::DeMorganND2CN($p,wff::not($p)),[0])
+		->conjunctionEliminationRight(1)
+		->conjunctionEliminationLeft(1)
+		->conditionalIntroduction(2)
 		->conditionalIntroduction(3)
 		->negationIntroduction(4,5)
-	;return $thm;
+		->eval(moarTheorems::doubleNegationElimination(wff::or($p,wff::not($p))),[6])
+	;return $theorem;
 }
 ```
