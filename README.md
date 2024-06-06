@@ -38,3 +38,22 @@ There are quite a few **rules of inference**, which aren't always _exactly_ how 
 - `->universalElimination(string $a, int $b)` : Within the premises of line `$b`, checks if line `$b`'s conclusion is an universal statement and whether `$a` is an adequate variable expression, and yeets the quantifier by concluding its formula once the quantified variabled was replaced by a variable of expression `$a`.
 -  `->eval(theorem $t, array $lines)` : Not a rule of inference _per se_, simply evaluates an earlier theorem `$t` that requires the lines stored at `$lines` in the right order.
 - `->sorry()` : Shows that we don't know how to prove a theorem, or haven't proved it yet ; converts the `issorry` variable to true.
+
+Here's an example of code that implements a full-fletched theorem, with a proof and everything :
+```php
+function doubleNegationIntroduction (wff $p) : theorem {
+	$premises[0] = $p;
+	$conclusion = wff::not(wff::not($p));
+	$sequent = new sequent($premises,$conclusion);
+	$thm = new theorem($sequent,[$p],'DNI');
+		
+	// proof
+	$thm->startSubproof(wff::not($p))
+		->conjunctionIntroduction(0,1)
+		->conjunctionEliminationLeft(2)
+		->conditionalIntroduction(1)
+		->conditionalIntroduction(3)
+		->negationIntroduction(4,5)
+	;return $thm;
+}
+```
