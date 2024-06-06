@@ -4,8 +4,8 @@ class wff {
 	public function replace(wff $p, wff $q) {
 		$array = $this->construction;
 		foreach ($array as $index => $a) {
-			if ($a == str_replace(["<span index='36'>","</span>"],"",strval($p)))
-				$this->construction[$index] = str_replace(["<span index='36'>","</span>"],"",strval($q));
+			if ($a == str_replace(["<span id='36'>","</span>"],"",strval($p)))
+				$this->construction[$index] = str_replace(["<span id='36'>","</span>"],"",strval($q));
 			if ($a instanceof wff) {
 				$a->replace($p,$q);
 				$this->construction[$index] = $a;
@@ -22,7 +22,7 @@ class wff {
 				throw new InvalidArgumentException("For variable names, only use alphanumeric symbols, -, ., and _.");
 			}
 		}
-		$this->expression = "<span index='36'>$l</span>";
+		$this->expression = "<span id='36'>$l</span>";
 		$this->construction = [$l];
 	}
 	public static function predicate (string $a, wff $b) {
@@ -37,8 +37,8 @@ class wff {
 		return $prop;
 	}
 	public function turnIntoConstant () : void {
-		$this->construction = [str_replace(["<span index='36'>","</span>"],"",$this->expression)];
-		$this->expression = str_replace("<span index='36'>","<span index='35'>",$this->expression);
+		$this->construction = [str_replace(["<span id='36'>","</span>"],"",$this->expression)];
+		$this->expression = str_replace("<span id='36'>","<span id='35'>",$this->expression);
 	}
 	public function getConstruction () : array { return $this->construction; }
 	
@@ -178,12 +178,12 @@ class theorem {
 		}
 	}
 	public function print() : void {
-		$str = "<span index='34'>╒══<span index='35'> Proof </span>for ";
-		$str .= "<span index='34'>(</span>";
+		$str = "<span id='34'>╒══<span id='35'> Proof </span>for ";
+		$str .= "<span id='34'>(</span>";
 		$max = 0;
 		$test = "";
 		foreach ($this->proof as $prop) {
-			$word = str_replace(["<span index='32'>","<span index='31'>","<span index='30'>","<span index='34'>","<span index='36'>","<span index='37'>","<span index='38'>","</span>","<span index='35'>"],"",str_replace(["∧","∨","→","¬","∀","∃"],"#",$prop["sequent"]));
+			$word = str_replace(["<span id='32'>","<span id='31'>","<span id='30'>","<span id='34'>","<span id='36'>","<span id='37'>","<span id='38'>","</span>","<span id='35'>"],"",str_replace(["∧","∨","→","¬","∀","∃"],"#",$prop["sequent"]));
 			if (strlen($word) > $max) {
 				$max = max($max,strlen($word));
 				$test = $word;
@@ -191,7 +191,7 @@ class theorem {
 		}
 		$displayArg = [];
 		foreach ($this->proof as $index => $prop) {
-			$counter = strlen(str_replace(["<span index='32'>","<span index='31'>","<span index='30'>","<span index='34'>","<span index='36'>","<span index='37'>","<span index='38'>","</span>","<span index='35'>"],"",str_replace(["∧","∨","→","¬","∀","∃"],"#",$prop["sequent"])));
+			$counter = strlen(str_replace(["<span id='32'>","<span id='31'>","<span id='30'>","<span id='34'>","<span id='36'>","<span id='37'>","<span id='38'>","</span>","<span id='35'>"],"",str_replace(["∧","∨","→","¬","∀","∃"],"#",$prop["sequent"])));
 			$displayArg[$index] = "";
 			for ($i = 0; $i <= $max-$counter; $i++) {
 				$displayArg[$index] .= " ";
@@ -202,9 +202,9 @@ class theorem {
 				$str .= ", ";
 			$str .= "$wff";
 		}
-		$str .= "<span index='34'>) ↦ </span>";
+		$str .= "<span id='34'>) ↦ </span>";
 		$str .= $this->theorem;
-		$str .= " <span index='34'>:</span>\n";
+		$str .= " <span id='34'>:</span>\n";
 		$j = strlen(strval(array_key_last($this->proof)));
 		foreach ($this->proof as $index => $prop) {
 			$ds[$index] = "";
@@ -213,13 +213,13 @@ class theorem {
 			}
 		}
 		foreach ($this->proof as $i => $step) {
-			if ($i != array_key_last($this->proof)) $str .= "<span index='34'>│  </span>";
-			else $str .= "<span index='34'>└──</span>";
+			if ($i != array_key_last($this->proof)) $str .= "<span id='34'>│  </span>";
+			else $str .= "<span id='34'>└──</span>";
 			if (strval($step["sequent"]) == strval($this->theorem))
-				$str .= " [<span index='34'>∎</span>]".$ds[1]."</span> ".$step["sequent"]."";
+				$str .= " [<span id='34'>∎</span>]".$ds[1]."</span> ".$step["sequent"]."";
 			else
-				$str .= " [<span index='32'>$i</span>]".$ds[$i]."<span index='31'> ".str_replace(["<span index='36'>","</span>"],["<span index='33'>","<span index='31'>"],$step["sequent"])."";
-			$str .= "<span index='35'>".$displayArg[$i].$step["inference"]."</span>(<span index='32'>".str_replace(",","</span>,<span index='32'>",$step["args"])."</span>)\n";
+				$str .= " [<span id='32'>$i</span>]".$ds[$i]."<span id='31'> ".str_replace(["<span id='36'>","</span>"],["<span id='33'>","<span id='31'>"],$step["sequent"])."";
+			$str .= "<span id='35'>".$displayArg[$i].$step["inference"]."</span>(<span id='32'>".str_replace(",","</span>,<span id='32'>",$step["args"])."</span>)\n";
 		}
 		print $str."</span>";
 	}
@@ -456,7 +456,8 @@ class theorem {
 		}
 		foreach ($_proof as $prop) {
 			$q = clone $prop["sequent"]->getConclusion();
-			if (substr_count("$q","<span index='36'>$a</span>") > 0 or substr_count("$q","<span index='35'>$a</span>") > 0)
+			if ((substr_count("$q","<span id='36'>$a</span>") > 0 or substr_count("$q","<span id='35'>$a</span>") > 0)
+				and !(substr_count("$q","∃$a") == 0 or substr_count("$q","∀$a") == 0))
 				throw new InvalidArgumentException("Use another variable name.");
 		}
 		$_0 = new wff(strval($p->getConstruction()[1]));
@@ -478,7 +479,8 @@ class theorem {
 		$p = clone ($_proof[$c])["sequent"]->getConclusion();
 		foreach ($_proof as $prop) {
 			$q = clone $prop["sequent"]->getConclusion();
-			if (substr_count("$q","<span index='36'>$b</span>") > 0 or substr_count("$q","<span index='35'>$b</span>") > 0)
+			if ((substr_count("$q","<span id='36'>$b</span>") > 0 or substr_count("$q","<span id='35'>$b</span>") > 0)
+				and !(substr_count("$q","∃$a") == 0 or substr_count("$q","∀$a") == 0))
 				throw new InvalidArgumentException("Use another variable name.");
 		}
 		$_b = new wff($b);
@@ -502,7 +504,8 @@ class theorem {
 		}
 		foreach ($_proof as $prop) {
 			$q = clone $prop["sequent"]->getConclusion();
-			if (substr_count("$q","<span index='36'>$a</span>") > 0 or substr_count("$q","<span index='35'>$a</span>") > 0)
+			if ((substr_count("$q","<span id='36'>$a</span>") > 0 or substr_count("$q","<span id='35'>$a</span>") > 0)
+				and !(substr_count("$q","∃$a") == 0 or substr_count("$q","∀$a") == 0))
 				throw new InvalidArgumentException("Use another variable name.");
 		}
 		$_0 = new wff(strval($p->getConstruction()[1]));
@@ -525,11 +528,12 @@ class theorem {
 		$_b = new wff($b);
 		foreach ($_proof as $prop) {
 			$q = clone $prop["sequent"]->getConclusion();
-			if (substr_count("$q","<span index='36'>$b</span>") > 0 or substr_count("$q","<span index='35'>$b</span>") > 0)
+			if ((substr_count("$q","<span id='36'>$b</span>") > 0 or substr_count("$q","<span id='35'>$b</span>") > 0)
+				and !(substr_count("$q","∃$a") == 0 or substr_count("$q","∀$a") == 0))
 				throw new InvalidArgumentException("Use another variable name.");
 		}
 		$p->replace($_a,$_b);
-		if (substr_count(strval($p),"<span index='35'>$a</span>") > 0) {
+		if (substr_count(strval($p),"<span id='35'>$a</span>") > 0) {
 			throw new InvalidArgumentException("Attempted universal generalization over a constant value.");
 		}
 		$this->proof[] =
@@ -569,7 +573,7 @@ class theorem {
 			"args"=>$args
 		);
 		if ($theorem->isSorry()) {
-			$this->name = "<span index='31'>".$this->name;
+			$this->name = "<span id='31'>".$this->name;
 			$this->issorry = true;
 		}
 		return $this;
@@ -584,7 +588,7 @@ class theorem {
 			"inference"=>"#",
 			"args"=>""
 		);
-		$this->name = "<span index='31'>".$this->name;
+		$this->name = "<span id='31'>".$this->name;
 		$this->issorry = true;
 		return $this;
 	}
