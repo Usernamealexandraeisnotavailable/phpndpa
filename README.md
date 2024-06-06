@@ -51,6 +51,7 @@ function doubleNegationElimination (wff $p) : theorem {
 	$theorem->sorry()
 	;return $theorem;
 }
+
 function DeMorganND2CN (wff $p, wff $q) : theorem {
 	$premises[0] = wff::not(wff::or($p,$q));
 	$conclusion = wff::and(wff::not($p),wff::not($q));
@@ -75,6 +76,7 @@ function DeMorganND2CN (wff $p, wff $q) : theorem {
 		->conjunctionIntroduction(7,14)
 	;return $theorem;
 }
+
 function lawOfExcludedMiddle (wff $p) : theorem {
 	$conclusion = wff::or($p,wff::not($p));
 	$sequent = new sequent([],$conclusion);
@@ -82,13 +84,13 @@ function lawOfExcludedMiddle (wff $p) : theorem {
 	
 	// proof
 	$theorem->startSubproof(wff::not(wff::or($p,wff::not($p))))
-		->eval(moarTheorems::DeMorganND2CN($p,wff::not($p)),[0])
+		->eval(DeMorganND2CN($p,wff::not($p)),[0])
 		->conjunctionEliminationRight(1)
 		->conjunctionEliminationLeft(1)
 		->conditionalIntroduction(2)
 		->conditionalIntroduction(3)
 		->negationIntroduction(4,5)
-		->eval(moarTheorems::doubleNegationElimination(wff::or($p,wff::not($p))),[6])
+		->eval(doubleNegationElimination(wff::or($p,wff::not($p))),[6])
 	;return $theorem;
 }
 ```
