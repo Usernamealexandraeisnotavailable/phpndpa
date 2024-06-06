@@ -1,3 +1,5 @@
+# PHPNDPA : PHP Natural Deduction Proof Assistant
+## A proof assistant for PHP (client)
 PHP is the language i use the most, and i love formal logic, so i thought i'd write a proof assistant in PHP !
 It comes with three new classes : `wff`, `sequent`, `theorem`.
 ### `wff` class
