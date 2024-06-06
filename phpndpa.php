@@ -456,7 +456,8 @@ class theorem {
 		}
 		foreach ($_proof as $prop) {
 			$q = clone $prop["sequent"]->getConclusion();
-			if (substr_count("$q","\033[36m$a\033[0m") > 0 or substr_count("$q","\033[35m$a\033[0m") > 0)
+			if ((substr_count("$q","\033[36m$a\033[0m") > 0 or substr_count("$q","\033[35m$a\033[0m") > 0)
+				and !(substr_count("$q","∃$a") == 0 or substr_count("$q","∀$a") == 0))
 				throw new InvalidArgumentException("Use another variable name.");
 		}
 		$_0 = new wff(strval($p->getConstruction()[1]));
@@ -478,7 +479,8 @@ class theorem {
 		$p = clone ($_proof[$c])["sequent"]->getConclusion();
 		foreach ($_proof as $prop) {
 			$q = clone $prop["sequent"]->getConclusion();
-			if (substr_count("$q","\033[36m$b\033[0m") > 0 or substr_count("$q","\033[35m$b\033[0m") > 0)
+			if ((substr_count("$q","\033[36m$b\033[0m") > 0 or substr_count("$q","\033[35m$b\033[0m") > 0)
+				and !(substr_count("$q","∃$a") == 0 or substr_count("$q","∀$a") == 0))
 				throw new InvalidArgumentException("Use another variable name.");
 		}
 		$_b = new wff($b);
@@ -502,7 +504,8 @@ class theorem {
 		}
 		foreach ($_proof as $prop) {
 			$q = clone $prop["sequent"]->getConclusion();
-			if (substr_count("$q","\033[36m$a\033[0m") > 0 or substr_count("$q","\033[35m$a\033[0m") > 0)
+			if ((substr_count("$q","\033[36m$a\033[0m") > 0 or substr_count("$q","\033[35m$a\033[0m") > 0)
+				and !(substr_count("$q","∃$a") == 0 or substr_count("$q","∀$a") == 0))
 				throw new InvalidArgumentException("Use another variable name.");
 		}
 		$_0 = new wff(strval($p->getConstruction()[1]));
@@ -525,7 +528,8 @@ class theorem {
 		$_b = new wff($b);
 		foreach ($_proof as $prop) {
 			$q = clone $prop["sequent"]->getConclusion();
-			if (substr_count("$q","\033[36m$b\033[0m") > 0 or substr_count("$q","\033[35m$b\033[0m") > 0)
+			if ((substr_count("$q","\033[36m$b\033[0m") > 0 or substr_count("$q","\033[35m$b\033[0m") > 0)
+				and !(substr_count("$q","∃$a") == 0 or substr_count("$q","∀$a") == 0))
 				throw new InvalidArgumentException("Use another variable name.");
 		}
 		$p->replace($_a,$_b);
