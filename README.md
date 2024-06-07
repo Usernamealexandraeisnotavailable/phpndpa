@@ -15,7 +15,7 @@ Structurally, an instance of `sequent` is comprised of a `protected array $premi
 - **Methods** : `$s->getPremises()` and `$s->getConclusion()` enables you to access both variables.
 
 ### `application` class
-Structurally, an instance of `application` is comprised of a `protected sequent $theorem`, a `protected array $proof`, a `protected string $name`, and a `protected bool $issorry`.
+Structurally, an instance of `application` is comprised of a `protected sequent $application`, a `protected array $proof`, a `protected string $name`, and a `protected bool $issorry`.
 
 - **Construction** : `$t = new application(sequent $a, string $name)`. It automatically generates the start of its proof, with as many lines as `$a`'s premises.
 - **`$t->print()`** : prints the application _with_ its proof, not just its sequent like its `strval` does.
