@@ -162,24 +162,23 @@ class sequent {
 	
 	
 };
-class theorem {
+class application {
 	
-	public function __toString() : string { return $this->theorem; }
-	public function __construct (sequent $theorem, array $evaluationWFFs, string $name) {
-		$this->issorry = false;
-		$this->theorem = $theorem;
-		$this->evaluationWFFs = $evaluationWFFs;
+	public function __toString() : string { return $this->application; }
+	public function __construct (sequent $application, string $name) {
+		$this->isSorry = false;
+		$this->application = $application;
 		$this->proof = [];
 		$this->name = $name;
-		if ($theorem->getPremises() != []) {
-			foreach ($theorem->getPremises() as $premise) {
-				$this->proof[] = array("sequent"=>new sequent($theorem->getPremises(),$premise),"inference"=>"R","args"=>"");
+		if ($application->getPremises() != []) {
+			foreach ($application->getPremises() as $premise) {
+				$this->proof[] = array("sequent"=>new sequent($application->getPremises(),$premise),"inference"=>"R","args"=>"");
 			}
 		}
 	}
 	public function print() : void {
 		$str = "<span id='34'>╒══<span id='35'> Proof </span>for ";
-		$str .= "<span id='34'>(</span>";
+		$str .= "<span id='34'></span>";
 		$max = 0;
 		$test = "";
 		foreach ($this->proof as $prop) {
@@ -197,13 +196,8 @@ class theorem {
 				$displayArg[$index] .= " ";
 			}
 		}
-		foreach ($this->evaluationWFFs as $i => $wff) {
-			if ($i > 0)
-				$str .= ", ";
-			$str .= "$wff";
-		}
-		$str .= "<span id='34'>) ↦ </span>";
-		$str .= $this->theorem;
+		$str .= "</span>";
+		$str .= $this->application;
 		$str .= " <span id='34'>:</span>\n";
 		$j = strlen(strval(array_key_last($this->proof)));
 		foreach ($this->proof as $index => $prop) {
@@ -215,7 +209,7 @@ class theorem {
 		foreach ($this->proof as $i => $step) {
 			if ($i != array_key_last($this->proof)) $str .= "<span id='34'>│  </span>";
 			else $str .= "<span id='34'>└──</span>";
-			if (strval($step["sequent"]) == strval($this->theorem))
+			if (strval($step["sequent"]) == strval($this->application))
 				$str .= " [<span id='34'>∎</span>]".$ds[1]."</span> ".$step["sequent"]."";
 			else
 				$str .= " [<span id='32'>$i</span>]".$ds[$i]."<span id='31'> ".str_replace(["<span id='36'>","</span>"],["<span id='33'>","<span id='31'>"],$step["sequent"])."";
@@ -240,7 +234,7 @@ class theorem {
 		$pn = clone ($_proof[$n])["sequent"]->getConclusion();
 		$this->proof[] =
 		array("sequent"=>new sequent (
-				theorem::combinePremises (
+				application::combinePremises (
 					[($_proof[$m])["sequent"],
 					($_proof[$n])["sequent"]]
 				),
@@ -356,7 +350,7 @@ class theorem {
 		}
 		$this->proof[] =
 		array("sequent"=>new sequent (
-				theorem::combinePremises(
+				application::combinePremises(
 					[($_proof[$m])["sequent"],
 					($_proof[$n])["sequent"]]
 				),
@@ -386,7 +380,7 @@ class theorem {
 		}
 		$this->proof[] =
 		array("sequent"=>new sequent (
-				theorem::combinePremises(
+				application::combinePremises(
 					[($_proof[$a])["sequent"],
 					($_proof[$b])["sequent"],
 					($_proof[$c])["sequent"]]
@@ -416,7 +410,7 @@ class theorem {
 		}
 		$this->proof[] =
 		array("sequent"=>new sequent (
-				theorem::combinePremises(
+				application::combinePremises(
 					[($_proof[$a])["sequent"],
 					($_proof[$b])["sequent"]]
 				),
@@ -436,7 +430,7 @@ class theorem {
 		}
 		$this->proof[] =
 		array("sequent"=>new sequent (
-				theorem::combinePremises(
+				application::combinePremises(
 					[($_proof[$a])["sequent"],
 					($_proof[$b])["sequent"]]
 				),
@@ -547,14 +541,14 @@ class theorem {
 		return $this;
 	}
 	
-	public function eval(theorem $theorem, array $lines) {
-		if (count($lines) != count($theorem->getTheorem()->getPremises())) {
-			throw new InvalidArgumentException("Mismatched line count <-> premises count in theorem evaluation.");
+	public function eval(application $application, array $lines) {
+		if (count($lines) != count($application->getTheorem()->getPremises())) {
+			throw new InvalidArgumentException("Mismatched line count <-> premises count in application evaluation.");
 		}
 		$args = "";
 		$premises = [];
 		foreach ($lines as $index => $ref) {
-			if (!in_array(($this->proof[$ref])["sequent"]->getConclusion(),$theorem->getTheorem()->getPremises())) {
+			if (!in_array(($this->proof[$ref])["sequent"]->getConclusion(),$application->getTheorem()->getPremises())) {
 				throw new InvalidArgumentException("Premise not found.");
 			}
 			if ($index > 0)
@@ -564,17 +558,17 @@ class theorem {
 		}
 		$this->proof[] =
 		array("sequent"=>new sequent (
-				theorem::combinePremises(
+				application::combinePremises(
 					$premises
 				),
-				($theorem->getTheorem())->getConclusion()
+				($application->getTheorem())->getConclusion()
 			),
-			"inference"=>$theorem->name,
+			"inference"=>$application->name,
 			"args"=>$args
 		);
-		if ($theorem->isSorry()) {
+		if ($application->isSorry()) {
 			$this->name = "<span id='31'>".$this->name;
-			$this->issorry = true;
+			$this->isSorry = true;
 		}
 		return $this;
 	}
@@ -583,26 +577,24 @@ class theorem {
 		$this->proof[] =
 		array("sequent"=>new sequent (
 				[],
-				new wff("Sorry !")
+				new wff("Sorry")
 			),
 			"inference"=>"#",
 			"args"=>""
 		);
 		$this->name = "<span id='31'>".$this->name;
-		$this->issorry = true;
+		$this->isSorry = true;
 		return $this;
 	}
 	
-	public function getTheorem () { return $this->theorem; }
+	public function getTheorem () { return $this->application; }
 	public function getProof () { return $this->proof; }
-	public function getEvaluationWFFs () { return $this->evaluationWFFs; }
-	public function isSorry () { return $this->issorry; }
+	public function isSorry () { return $this->isSorry; }
 	
-	protected sequent $theorem;
+	protected sequent $application;
 	protected array $proof;
-	protected array $evaluationWFFs;
 	protected string $name;
-	protected bool $issorry;
+	protected bool $isSorry;
 	
 };
 ?>
