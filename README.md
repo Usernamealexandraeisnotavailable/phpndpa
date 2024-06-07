@@ -1,7 +1,7 @@
 # PHPNDPA : PHP Natural Deduction Proof Assistant
 ## A proof assistant for PHP
 PHP is the language i use the most, and i love formal logic, so i thought i'd write a proof assistant in PHP !
-It comes with three new classes : `wff`, `sequent`, `theorem`.
+It comes with three new classes : `wff`, `sequent`, `application`.
 ### `wff` class
 Structurally, an instance of `wff` is comprised of a `protected string $expression` and a `protected array $construction`.
 - **Construction** : `$p = new wff("p")`, only takes a string argument with alphanumeric symbols, -, ., and _.
@@ -14,11 +14,11 @@ Structurally, an instance of `sequent` is comprised of a `protected array $premi
 - **Construction** : `$s = new sequent(array $a, wff $b)` where `$a` is an array of wff instances (it **will** be checked).
 - **Methods** : `$s->getPremises()` and `$s->getConclusion()` enables you to access both variables.
 
-### `theorem` class
-Structurally, an instance of `theorem` is comprised of a `protected sequent $theorem`, a `protected array $proof`, a `protected array $evaluationWFFs`, a `protected string $name`, and a `protected bool $issorry`.
+### `application` class
+Structurally, an instance of `application` is comprised of a `protected sequent $theorem`, a `protected array $proof`, a `protected string $name`, and a `protected bool $issorry`.
 
-- **Construction** : `$t = new theorem(sequent $a, array $evaluationWFFs, string $name)`. It automatically generates the start of its proof, with as many lines as `$a`'s premises.
-- **`$t->print()`** : prints the theorem _with_ its proof, not just its sequent like its `strval` does.
+- **Construction** : `$t = new application(sequent $a, string $name)`. It automatically generates the start of its proof, with as many lines as `$a`'s premises.
+- **`$t->print()`** : prints the application _with_ its proof, not just its sequent like its `strval` does.
 - **`$t->startSubproof(wff $a)`** : adds a new premise `$a` on top of `$t`'s proof's last step's premises, generating a new step in said proof along the way.
 
 There are quite a few **rules of inference**, which aren't always _exactly_ how they're formalized in natural deduction but eh, that's close enough.
@@ -36,27 +36,27 @@ There are quite a few **rules of inference**, which aren't always _exactly_ how 
 - **`->existentialElimination(string $a, int $b)`** : Within the premises of line `$b`, checks if line `$b`'s conclusion is an existential statement and whether `$a` is an adequate constant expression, and yeets the quantifier by concluding its formula once the quantified variabled was replaced by a constant of expression `$a`.
 - **`->universalIntroduction(string $a, string $b, int $c)`** : Within the premises of line `$c`, checks if `$a` is not the expression of a constant and that `$b` is an adequate variable expression, before concluding an universal quantifier with string `$b` and replacing every instance of the variable of expression `$a` by a variable of expression `$b`.
 - **`->universalElimination(string $a, int $b)`** : Within the premises of line `$b`, checks if line `$b`'s conclusion is an universal statement and whether `$a` is an adequate variable expression, and yeets the quantifier by concluding its formula once the quantified variabled was replaced by a variable of expression `$a`.
-- **`->eval(theorem $t, array $lines)`** : Not a rule of inference _per se_, simply evaluates an earlier theorem `$t` that requires the lines stored at `$lines` in the right order.
-- **`->sorry()`** : Shows that we don't know how to prove a theorem, or haven't proved it yet ; converts the `issorry` variable to true.
+- **`->eval(application $t, array $lines)`** : Not a rule of inference _per se_, simply evaluates an earlier application `$t` that requires the lines stored at `$lines` in the right order.
+- **`->sorry()`** : Shows that we don't know how to prove an application, or haven't proved it yet ; converts the `issorry` variable to true.
 
-Here are examples of codes that implement fully-fletched theorem, with proofs and everything :
+Here are examples of codes that implement fully-fletched theorems, with proofs and everything :
 ```php
-function doubleNegationElimination (wff $p) : theorem {
+function doubleNegationElimination (wff $p) : application {
 	$premises[0] = wff::not(wff::not($p));
 	$conclusion = $p;
 	$sequent = new sequent($premises,$conclusion);
-	$theorem = new theorem($sequent,[$p],'DNE');
+	$theorem = new application($sequent,'DNE');
 	
 	// no proof in intuitionistic logic... sowwy ! >w<
 	$theorem->sorry()
 	;return $theorem;
 }
 
-function DeMorganND2CN (wff $p, wff $q) : theorem {
+function DeMorganND2CN (wff $p, wff $q) : application {
 	$premises[0] = wff::not(wff::or($p,$q));
 	$conclusion = wff::and(wff::not($p),wff::not($q));
 	$sequent = new sequent($premises,$conclusion);
-	$theorem = new theorem($sequent,[$p,$q],'DeM');
+	$theorem = new application($sequent,'DeM');
 	
 	// proof
 	$theorem->startSubproof($p)
@@ -77,10 +77,10 @@ function DeMorganND2CN (wff $p, wff $q) : theorem {
 	;return $theorem;
 }
 
-function lawOfExcludedMiddle (wff $p) : theorem {
+function lawOfExcludedMiddle (wff $p) : application {
 	$conclusion = wff::or($p,wff::not($p));
 	$sequent = new sequent([],$conclusion);
-	$theorem = new theorem($sequent,[$p],'LEM');
+	$theorem = new application($sequent,'LEM');
 	
 	// proof
 	$theorem->startSubproof(wff::not(wff::or($p,wff::not($p))))
